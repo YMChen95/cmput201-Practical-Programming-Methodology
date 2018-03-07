@@ -1,0 +1,159 @@
+#include <stdio.h> 
+#include <string.h> 
+#include <math.h>
+#include <stdlib.h>
+#include "draw1b.h"
+
+int main(int argc, char * argv[]) 
+{ 
+  int i; 
+  FILE * fp; 
+  FILE * executable; 
+  for( i = 1; i < argc; i++ ) { 
+    fp=fopen(argv[i],"r");
+    if( fp == NULL ) 
+      { 
+	printf( "Could not open file %s\n", argv[ i ] ); 
+	exit( -1 ); 
+      } 
+    else
+      { 
+	//print the first and second line one terminal.
+	printf("draw1b started on ");
+	fflush(NULL);
+	system("date");
+	//open sketchpad and create a file that is named executable
+	executable=popen("java -jar Sketchpad.jar","w");
+	printf("Inuput File: %s\n", argv[i]);
+	parseFile( fp,argv[ i ],executable);//enter parsefile function
+
+      } 
+  } 
+  return( 0 ); 
+}/*main*/
+
+void dr(char * X,FILE * executable)
+{
+  sscanf(&X[4],"%s",draw_name);
+  int flag_a,flag_b; //2 flags to get the 0,1,2,3...etc.
+  for (flag_a=0;flag_a<image_num;flag_a++)
+    {
+      //compare the flag image to the all images' name that has stored and get the correct one
+      if ((strncmp(&i_name[flag_a].name, draw_name, strlen(draw_name)))==0)
+	{
+	  for (flag_b=0;flag_b<(i_name[flag_a].size);flag_b++)
+	    {
+	      /*use 4 double to store each initial points and end points for the image
+		then upload it to the sketchpad to actually DRAW it
+	      */
+	      image_Ax=i_name[flag_a].x_initial[flag_b];//initial point x
+	      image_Ay=i_name[flag_a].y_initial[flag_b];//initial point y
+	      image_Bx=i_name[flag_a].x_initial[flag_b+1];//end point x
+	      image_By=i_name[flag_a].y_initial[flag_b+1];//end point y
+	      fprintf(executable,"drawSegment %ld %ld %ld %ld\n",lround(image_Ax),lround(image_Ay),lround(image_Bx),lround(image_By));
+	    }
+	}
+    }
+}
+
+void trans(char * X)
+{
+  sscanf(&X[9]," %s %lf %lf",translate_name,&translate_x, &translate_y);
+  int flag_a, flag_b;
+  for (flag_a=0;flag_a<image_num;flag_a++)
+    {
+      //compare the flag image to the all images' name that has stored and get the correct one
+      if(strncmp(&i_name[flag_a].name, translate_name, strlen(translate_name))==0)
+	{
+	  //use a for loop to add all the point by the translate value
+	  for(flag_b=0;flag_b<i_name[flag_a].size+1;flag_b++)
+	    {
+	      i_name[flag_a].x_initial[flag_b]+=translate_x;
+	      i_name[flag_a].y_initial[flag_b]+=translate_y;
+	    }
+	}
+    }
+} 
+
+void pri(char * X)//print to stdout
+{
+  sscanf(&X[5],"%s",print_name);
+  printf("Print Image %s %s\n",print_name,"=");
+  int flag_a,flag_b;
+  for (flag_a=0;flag_a<image_num;flag_a++){
+    if ((strncmp(&i_name[flag_a].name,print_name,strlen(print_name)))==0)
+      {
+	for (flag_b=0;flag_b<(i_name[flag_a].size+1);flag_b++)
+	  {
+	    printf("%i %i\n",(int) i_name[flag_a].x_initial[flag_b],(int) i_name[flag_a].y_initial[flag_b]);
+	  }
+	printf("End Image %s\n",&i_name[flag_a].name);
+      }
+  }
+}
+
+void parseFile( FILE * fp, char * fname,  FILE * executable) 
+{ 
+
+  while(fgets(X,256, fp)!=NULL ) 
+    { 
+      //compare the first 5 elements of line to each key words
+      if (strncmp(X,"Image",5)==0)
+	{
+	  //store the name of image, x and y initial point of image
+	  sscanf (&X[5],"%s %lf %lf", &i_name[i].name, &i_name[i].x_initial[j], &i_name[i].y_initial[j]);
+	  //store number of image
+	  i_name[i].size=0;
+	  image_num++;
+	}
+      
+      else if (strncmp(X,"lineTo",6)==0)
+	{
+	  //store the value that need to add to the initial x and y
+	  sscanf(&X[6]," %lf %lf", &delta_x, &delta_y);
+	  //use initial point to plus the line to
+	  i_name[i].x_initial[j+1]=i_name[i].x_initial[j]+delta_x;
+	  i_name[i].y_initial[j+1]=i_name[i].y_initial[j]+delta_y;
+	  i_name[i].size++;
+	  j++;
+	}
+      else if (strncmp(X,"End",3)==0)
+	{
+	  j=0;
+	  i+=1;
+	}
+      else if (strncmp(X,"child",5)==0)
+	{
+	  /*get all the information after the 4th element
+	    upload it to sketchpad*/
+	  fprintf(executable,"%s",&X[5]);
+	}
+      else if (strncmp(X,"#",1)==0)
+	{
+	  printf("%s",X);
+	}
+
+      else if (strncmp(X,"draw",4)==0)
+	{
+        /*If the first word is 4letters and is draw get all the infromation that is already stored
+	,and draw the image in the sketchpad
+       */
+	  dr(X,executable);
+	}
+
+      else if (strncmp(X,"print",5)==0)
+	{
+	  //enter void pri function
+	  pri(X);
+	}
+      else if (strncmp(X,"translate",9)==0)
+	{
+	  //enter void trans function
+	  trans(X);
+	}
+    }  
+  fflush(executable);
+  fclose( fp );//close inputfile
+  pclose(executable);//close outputfile
+} 
+

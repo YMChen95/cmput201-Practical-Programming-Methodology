@@ -1,0 +1,9 @@
+
+part1: part1.c
+	gcc -Wall -std=c99 -g -o part1 part1.c
+part2: part2.c
+	gcc -Wall -std=c99 -g -o part2 part2.c
+clean1:
+	-rm  par1.c
+clean2:
+	-rm  par2.c

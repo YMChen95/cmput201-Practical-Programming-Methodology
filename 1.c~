@@ -1,0 +1,9 @@
+#include <stdio.h>
+
+int main() {
+	int a,b;
+	float x,y;
+	printf("%d\n",scanf("%d %f %d %f",&a,&x,&b,&y));
+	printf("a=%d,x=%f,b=%d,y=%f");
+	return 0;
+}

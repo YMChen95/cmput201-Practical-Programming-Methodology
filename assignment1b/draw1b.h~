@@ -1,0 +1,40 @@
+/* assignment 1b
+   Mengyang Chen
+   1412408
+   lecture section A2
+   lab section D05
+   Juehui Fan Ta's name */
+
+
+//declaration for all function, global variables
+int i=0,j=0;
+char X[256];
+char print_name[16],draw_name[16],translate_name[16];
+struct image
+{
+	double x_initial[100],y_initial[100];
+	char name;
+	int size;
+};
+
+struct image i_name[16];
+
+int image_num=0;
+
+double delta_x, delta_y;
+
+double image_Ax,image_Ay,image_Bx,image_By;
+
+double translate_x,translate_y;
+
+void parseFile( FILE * fp, char * fname, FILE * executable);
+
+void trans(char * X);
+
+void pri(char * X);
+
+void dr(char * X, FILE * executable);
+
+FILE *popen(char *command, const char *type);
+
+int pclose(FILE *stream);

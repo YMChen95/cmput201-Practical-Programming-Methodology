@@ -1,0 +1,324 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+void printout(FILE *inputfile);
+void generatefile(FILE *gen_file,int max_x, int max_y, int innum_p);
+void writefile(FILE *inputfile, FILE*outputfile);
+char* inputfile_name(int leghth, char** array);
+char* outputfile_name(int length, char** array);
+int intlen(int invalue);
+int spacelen(char *line);
+
+int main(int argc, char** argv){
+
+  FILE * fpin;
+  FILE * fpout;
+  FILE * fpgen;
+
+  char* inputfile;
+  char* outputfile;  
+  char gen_file[30];
+
+  int inmax_x,inmax_y,innum_pt,innum_inst;
+  if (argc ==3 || argc==5){
+    if (strncmp(argv[1],"-i",2)==0||strncmp(argv[1],"-o",2)==0){
+      inputfile=inputfile_name(argc,argv);
+      outputfile=outputfile_name(argc,argv);    
+      if(inputfile!=NULL && outputfile==NULL){
+	fpin = fopen(inputfile,"r");
+	if (fpin == NULL){
+	  printf("File %s doesn't exist\n", inputfile);
+	  exit(-1);
+	}
+	else{
+	  printout(fpin);
+	}
+	fclose(fpin);
+      }
+      else if(inputfile!=NULL && outputfile!=NULL){
+	fpin=fopen(inputfile,"r");
+	fpout=fopen(outputfile,"w");
+	if(fpin == NULL){
+	  printf("File %s doesn't exist\n",inputfile);
+	  exit(-1);
+	}
+	else{
+	  writefile(fpin,fpout);
+	}
+	fclose(fpin);
+	fclose(fpout);
+      }
+      else{
+	 printf(">%s [-i inputfile[-o outputfile]]\n",argv[0]);
+	 exit(-1);
+      }
+    }
+    else{
+      printf(">%s [-i inputfile[-o outputfile]]\n",argv[0]);
+      exit(-1);
+    }
+  }
+
+  else if(argc==1){
+    printf("Generating random instances ...\n");
+    printf("Enter the circuit board size MAX_X MAX_Y: ");
+    scanf("%d %d",&inmax_x,&inmax_y);
+    if(inmax_x>1000 || inmax_x<0||inmax_y<0||inmax_y>1000){
+      printf("The range of Max_x and Max_y should be [0-1000]\n");
+      exit(-1);
+    }
+    printf("Enter the number of points NUM_PT: ");
+    scanf("%d",&innum_pt);
+
+    if(innum_pt>10000||innum_pt<1){
+      printf("The range of number point should be [1-10000]\n");
+      exit(-1);
+    }
+    else if((inmax_x+1)*(inmax_y+1)<innum_pt){
+      printf("File structure error.\n");
+      exit(-1);
+    }
+
+    printf("Enter the number of random instances to be generated:");
+    scanf("%d",&innum_inst);
+    if(innum_inst<1){
+      printf("The number of instances should be a number and greater or equal than 1\n");
+      exit(-1);
+    }
+
+    for(int i=1;i<=innum_inst;i++){
+      sprintf(gen_file,"instance%d_%d.txt",innum_pt,i);
+      fpgen=fopen(gen_file,"w");
+      generatefile(fpgen,inmax_x,inmax_y,innum_pt);
+      printf("\ninstance%d_%d.txt generated",innum_pt,i);
+    }
+    printf("...done!\n");
+    // printf("%d %d %d %d\n",inmax_x,inmax_y,innum_pt,innum_inst);    
+}
+
+  else{
+    printf(">%s [-i inputfile[-o outputfile]]\n",argv[0]);
+    exit(-1);
+  }
+}
+void generatefile(FILE* gen_file,int max_x, int max_y, int innum_pt){
+ int x,y,prev_x,prev_y;
+ fprintf(gen_file,"%d %d\n%d\n",max_x,max_y,innum_pt);
+
+ for(int i=1;i<=innum_pt;i++){
+   prev_x=x;
+   prev_y=y;
+   x=rand()%(max_x+1);
+   y=rand()%(max_y+1);
+   if(x==prev_x && y==prev_y){
+     printf("  File structure error\n");
+     printf("There are duplicated points\n");
+     exit(-1);
+   }
+   else{
+     fprintf(gen_file,"%d %d\n",x,y);
+   }
+ }
+}
+
+void writefile(FILE *inputfile, FILE *outputfile){
+  int i=0,Max_x=0,Max_y=0,num_pt=0;
+  char line[100];
+  int len_maxx,len_maxy,len_numpt,len_x,len_y,len_space=0;
+  int last_num1=0,last_num2=0,last_num3=0;
+  while(fgets(line,100,inputfile)!=NULL){
+    int x=-1,y=-1;
+    len_space=spacelen(line);
+    if (strncmp(&line[len_space],"\n",1)==0){
+      continue;
+    }
+    else if (i==0 && strncmp(line,"#",1)!=0 ){
+      i++;
+      sscanf(&line[0],"%d %d",&Max_x,&Max_y);
+      len_maxx=intlen(Max_x);
+      len_maxy=intlen(Max_y);
+      sscanf(&line[len_maxx+len_maxy+len_space]," %d",&last_num1);
+
+      if(Max_x>1000 || Max_x<0||Max_y<0||Max_y>1000){
+	printf("The range of Max_x and Max_y should be [0-1000]\n");
+	exit(-1);
+      }
+      else if(last_num1!=0||len_maxy==0){
+	printf("File structure error.\n");
+	exit(-1);
+      }
+
+      fprintf(outputfile,"%d %d\n",Max_x,Max_y);
+     }
+    else if(i==1 && strncmp(line,"#",1)!=0){
+      i++;
+      sscanf(&line[0],"%d",&num_pt);
+      len_numpt=intlen(num_pt);
+      sscanf(&line[len_numpt],"%d",&last_num2);
+
+      if(num_pt>10000||num_pt<1){
+	printf("The range of number point should be [1-10000]\n");
+	exit(-1);
+      }
+      else if(last_num2!=0||len_numpt==0){
+	printf("File structure error.\n");
+	exit(-1);
+      }
+      fprintf(outputfile,"%d\n",num_pt);
+      }
+    else if(i>=2 && strncmp(line,"#",1)!=0){
+      i++;
+      sscanf(&line[0],"%d %d",&x,&y);
+      len_x=intlen(x);
+      len_y=intlen(y);
+      sscanf(&line[len_x+len_y+len_space]," %d",&last_num3);
+
+      if(x>Max_x || y>Max_y){
+	printf("The range of x and y should be [0-%d] and [0-%d]\n",Max_x,Max_y);
+	exit(-1);
+      }
+      else if(i-2>num_pt){
+	printf("coordinate is out of the specified rectangular area\n");
+	exit(-1);
+      }
+      else if(last_num3!=0||y<0||x<0){
+	printf("File structure error.\n");
+	exit(-1);
+      }
+      fprintf(outputfile,"%d %d\n",x,y);
+     
+    }   
+  }
+ if(i-2<num_pt){
+    printf("Not engough input coordinate in inputfile.\n");
+  }
+   printf("file already generated\n");
+}
+
+
+void printout(FILE *inputfile){
+  int i=0,Max_x=0,Max_y=0,num_pt=0;
+  char line[100];
+  int len_maxx,len_maxy,len_numpt,len_x,len_y,len_space=0;
+  int last_num1=0,last_num2=0,last_num3=0;
+  while(fgets(line,100,inputfile)!=NULL){
+    int x=-1,y=-1;
+    len_space=spacelen(line);
+    if (strncmp(&line[len_space],"\n",1)==0){
+      continue;
+    }
+    else if (i==0 && strncmp(line,"#",1)!=0 ){
+      i++;
+      sscanf(&line[0],"%d %d",&Max_x,&Max_y);
+      len_maxx=intlen(Max_x);
+      len_maxy=intlen(Max_y);
+      sscanf(&line[len_maxx+len_maxy+len_space]," %d",&last_num1);
+
+      if(Max_x>1000 || Max_x<0||Max_y<0||Max_y>1000){
+	printf("The range of Max_x and Max_y should be [0-1000]\n");
+	exit(-1);
+      }
+      else if(last_num1!=0||len_maxy==0){
+	printf("File structure error.\n");
+	exit(-1);
+      }
+
+      printf("%d %d\n",Max_x,Max_y);
+     }
+    else if(i==1 && strncmp(line,"#",1)!=0){
+      i++;
+      sscanf(&line[0],"%d",&num_pt);
+      len_numpt=intlen(num_pt);
+      sscanf(&line[len_numpt],"%d",&last_num2);
+
+      if(num_pt>10000||num_pt<1){
+	printf("The range of number point should be [1-10000]\n");
+	exit(-1);
+      }
+      else if(last_num2!=0||len_numpt==0){
+	printf("File structure error.\n");
+	exit(-1);
+      }
+      printf("%d\n",num_pt);
+      }
+    else if(i>=2 && strncmp(line,"#",1)!=0){
+      i++;
+      sscanf(&line[0],"%d %d",&x,&y);
+      len_x=intlen(x);
+      len_y=intlen(y);
+      //printf("%d %d\n",len_x,len_y);
+      //printf("%d\n",len_space);
+      sscanf(&line[len_x+len_y+len_space+1],"%d",&last_num3);
+      //printf("%d\n",last_num3);
+      if(x>Max_x || y>Max_y){
+	printf("The range of x and y should be [0-%d] and [0-%d]\n",Max_x,Max_y);
+	exit(-1);
+      }
+      else if(i-2>num_pt){
+	printf("coordinate is out of the specified rectangular area\n");
+	exit(-1);
+      }
+      else if(last_num3!=0||y<0||x<0){
+	printf("File structure error.\n");
+	exit(-1);
+      }
+      printf("%d %d\n",x,y);
+    }   
+  }
+  if(i-2<num_pt){
+    printf("Not engough input coordinate in inputfile.\n");
+  }
+  
+}
+
+int spacelen(char *line){
+  int spaces=0;
+  for(int i = 0; line[i] != '\0'; i++)
+ {
+     if(line[i]==' ')
+     {
+          spaces++;
+     }
+  }
+  return spaces;
+}
+
+int intlen(int invalue)
+{
+  int length=0;
+  while (invalue>=1){
+    invalue=invalue/10;
+    length++;
+  }
+  return length;
+}
+
+char* inputfile_name(int length, char** array){
+    // Parses an array of strings and if a string matching "-i" is found, it returns the next string in the array
+    // if no file name is in the string, return NULL
+    char* filename;
+    filename = NULL;
+
+    for(int i=0; i < length; i++){
+      if(strcmp(array[i], "-i") == 0){
+	filename = array[i+1];
+	break;
+      }
+    }
+	return filename;
+}
+char* outputfile_name(int length, char** array){
+  // Parses an array of strings and if a string matching "-o" is found, it returns the next string in the array
+    // if no file name is in the string, return NULL
+    char* filename;
+    filename = NULL;
+        for(int i=0; i < length; i++){
+            if(strcmp(array[i], "-o") == 0){
+                filename = array[i+1];
+                break;
+            }
+        }
+    return filename;
+}

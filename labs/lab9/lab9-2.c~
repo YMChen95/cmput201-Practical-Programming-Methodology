@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int palindorm(char* string){
+  int len = strlen(string);
+  
+  //printf("%d\n",len);
+  if (len == 1) return 1;
+  
+  char *ptr1 = string;
+  char *ptr2 = string + len - 1;
+  printf("%s %s\n",string,string+len-1);
+  //printf("%p %p\n",ptr1, ptr2);
+  while(ptr2 >= ptr1) {
+    if (!isalpha(*ptr1)) {
+      ptr1++;
+      continue;
+    }
+    if (!isalpha(*ptr2)) {
+      ptr2--;
+      continue;
+    }
+
+    if( tolower(*ptr1) != tolower(*ptr2)) {
+      return 0;
+    }
+    ptr1++; 
+    ptr2--;
+  }
+  return 1;
+}
+
+int main(){
+  char string[99];
+
+  printf("Enter a message:");
+  scanf("%s", string);
+  if(palindorm(string)==1){
+    printf("Palindrome\n");
+  }
+  else
+    printf("Not palindrome\n");
+}

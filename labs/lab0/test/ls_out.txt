@@ -1,0 +1,21 @@
+total 29K
+1.5K drwx------+ 14 me7 ugrad   14 Sep  8  2015 174
+1.5K drwx------+ 12 me7 ugrad   22 Sep  8  2015 175
+ 512 -rw-------+  1 me7 ugrad    0 Sep 10  2015 Assign1.c~
+2.0K -rw-------+  1 me7 ugrad 5.2K Mar 17 14:53 Auto_transacation.py
+1.0K -rw-------+  1 me7 ugrad  146 Feb 23  2016 C:\nppdf32Log\debuglog.txt
+2.5K drwx------+  3 me7 ugrad   32 Apr  4 19:46 Desktop
+1.5K drwx------+  4 me7 ugrad    4 Sep  8 08:09 Documents
+1.5K drwx------+  2 me7 ugrad   14 Sep  9 14:04 Downloads
+1.5K drwx------+  2 me7 ugrad    2 Sep 12  2014 Music
+1.5K drwx------+  2 me7 ugrad    2 Sep 12  2014 Pictures
+1.5K drwx------+  2 me7 ugrad    2 Sep 12  2014 Public
+1.5K drwx------+  2 me7 ugrad    2 Nov  6  2014 Scratch
+1.5K drwx------+  2 me7 ugrad    2 Sep 12  2014 Templates
+1.5K drwx------+  2 me7 ugrad    2 Sep 12  2014 Videos
+ 512 -rw-------+  1 me7 ugrad    0 Feb 11  2016 a2-query.sql
+1.5K drwx------+  6 me7 ugrad    6 Oct 15  2015 cmput201
+1.5K drwx------+  5 me7 ugrad    5 Mar 18 13:22 cmput291
+1.5K drwx------+  2 me7 ugrad    8 Sep  8 10:35 cmput340
+1.0K -rw-------+  1 me7 ugrad  582 Mar 22 17:02 example2p2.py
+1.5K drwx------+  3 me7 ugrad    3 Jan 30  2015 workspace

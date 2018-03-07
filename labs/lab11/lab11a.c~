@@ -1,0 +1,156 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+  int digit;
+  struct node *next;
+};
+
+struct node * reverse_list(struct node *root) {
+  struct node *root_new = NULL;
+  struct node *cur = NULL;
+  while (root) {
+    cur = root;
+    root = root->next;
+    cur->next = root_new;
+    root_new = cur;
+  }
+  return root_new;
+}
+
+struct node * create_list(int num) {
+  struct node *root = NULL;
+  while (num != 0) {
+    struct node *cur = (struct node*)malloc(sizeof(struct node));
+    cur->next = root;
+    cur->digit = num % 10;
+    root = cur;
+    num /= 10;
+  }
+  return root;
+}
+
+struct node* subtractLinkedListHelper(struct node* l1, struct node* l2, bool& borrow)
+{
+    if (l1 == NULL && l2 == NULL && borrow == 0)
+        return NULL;
+ 
+    struct node* previous = subtractLinkedListHelper(l1 ? l1->next : NULL,
+                                    l2 ? l2->next : NULL, borrow);
+ 
+    int d1 = l1->digit;
+    int d2 = l2->digit;
+    int sub = 0;
+ 
+    /* if you have given the value value to next digit then
+       reduce the d1 by 1 */
+    if (borrow)
+    {
+        d1--;
+        borrow = false;
+    }
+ 
+    /* If d1 < d2 , then borrow the number from previous digit.
+       Add 10 to d1 and set borrow = true; */
+    if (d1 < d2)
+    {
+        borrow = true;
+        d1 = d1 + 10;
+    }
+ 
+    /* subtract the digits */
+    sub = d1 - d2;
+ 
+    /* Create a Node with sub value */
+    struct node* current = newNode(sub);
+ 
+    /* Set the Next pointer as Previous */
+    current->next = previous;
+ 
+    return current;
+}
+ 
+/* This API subtracts two linked lists and returns the
+   linked list which shall  have the subtracted result. */
+struct node *diff(struct node* l1,struct node* l2)
+{
+    // Base Case.
+    if (l1 == NULL &&  l2 == NULL)
+        return NULL;
+ 
+    // In either of the case, get the lengths of both
+    // Linked list.
+    int len1 = getLength(l1);
+    int len2 = getLength(l2);
+ 
+    struct node *lNode = NULL, *sNode = NULL;
+ 
+    struct node* temp1 = l1;
+    struct node* temp2 = l2;
+ 
+    // If lengths differ, calculate the smaller Node
+    // and padd zeros for smaller Node and ensure both
+    // larger Node and smaller Node has equal length.
+    if (len1 != len2)
+    {
+        lNode = len1 > len2 ? l1 : l2;
+        sNode = len1 > len2 ? l2 : l1;
+        sNode = paddZeros(sNode, abs(len1 - len2));
+    }
+ 
+    else
+    {
+        // If both list lengths are equal, then calculate
+        // the larger and smaller list. If 5-6-7 & 5-6-8
+        // are linked list, then walk through linked list
+        // at last Node as 7 < 8, larger Node is 5-6-8
+        // and smaller Node is 5-6-7.
+        while (l1 && l2)
+        {
+            if (l1->data != l2->data)
+            {
+                lNode = l1->digit > l2->digit ? temp1 : temp2;
+                sNode = l1->digit > l2->digit ? temp2 : temp1;
+                break;
+            }
+            l1 = l1->next;
+            l2 = l2->next;
+        }
+    }
+ 
+    // After calculating larger and smaller Node, call
+    // subtractLinkedListHelper which returns the subtracted
+    // linked list.
+    bool borrow = false;
+    return subtractLinkedListHelper(lNode, sNode, borrow);
+}
+
+void free_list(struct node* root) {
+  struct node *tmp = NULL;
+  while (root) {
+    tmp = root;
+    root = root->next;
+    free(tmp);
+  }
+}
+
+void print_list(struct node *root) {
+  while (root) {
+    printf("%d ", root->digit);
+    root = root->next;
+  }
+  printf("\n");
+}
+
+int main(int argc, char** argv) {
+  int num1, num2;
+  scanf("%d%d", &num1, &num2);
+  struct node *l1 = create_list(num1);
+  struct node *l2 = create_list(num2);
+  struct node *l3 = diff(l1, l2);
+  print_list(l3);
+  free(l1);
+  free(l2);
+  free(l3);
+  return 0;
+}

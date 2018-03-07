@@ -1,0 +1,6 @@
+#include<stdio.h>
+int main(void){
+	int m;
+	m=28%12;
+	printf("%d",m);
+}

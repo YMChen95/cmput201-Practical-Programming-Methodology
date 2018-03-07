@@ -1,0 +1,17 @@
+name:               Mengyang Chen
+ONE Card number:    1412408
+Unix id:            me7
+lecture section:    A2
+lab section:        D05
+TA's name:         Juehui Fan
+
+
+
+Compile by typing 
+make
+
+Run by typing
+./draw1a ./input_file
+
+Clean by typing
+make clean

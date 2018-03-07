@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+  int digit;
+  struct node *next;
+};
+
+struct node * reverse_list(struct node *root) {
+  struct node *root_new = NULL;
+  struct node *cur = NULL;
+  while (root) {
+    cur = root;
+    root = root->next;
+    cur->next = root_new;
+    root_new = cur;
+  }
+  return root_new;
+}
+
+struct node * create_list(int num) {
+  struct node *root = NULL;
+  while (num != 0) {
+    struct node *cur = (struct node*)malloc(sizeof(struct node));
+    cur->next = root;
+    cur->digit = num % 10;
+    root = cur;
+    num /= 10;
+  }
+  return root;
+}
+
+struct node *sum(struct node *num1, struct node *num2) {
+  struct node* v1 = reverse_list(num1);
+  struct node* v2 = reverse_list(num2);
+  struct node *result = NULL;
+  int last = 0;
+  int quent = 0;
+
+  while(v1 && v2) {
+    quent = (v1->digit + v2->digit + last ) / 10;
+    int reminder = (v1->digit + v2->digit + last ) % 10;
+    last = quent;
+    struct node *cur = (struct node*)malloc(sizeof(struct node));
+    cur->digit = reminder;
+    cur->next = result;
+    result = cur;
+    v1 = v1->next;
+    v2 = v2->next;
+  }
+  if (v1 == NULL) { v1 = v2; }
+  while (v1) {
+    quent = (v1->digit + last ) / 10;
+    int reminder = (v1->digit + last ) % 10;
+    last = quent;
+    struct node *cur = (struct node*)malloc(sizeof(struct node));
+    cur->digit = reminder;
+    cur->next = result;
+    result = cur;
+    v1 = v1->next;
+  }
+
+  if (quent > 0) {
+    struct node *temp = (struct node*)malloc(sizeof(struct node));
+    temp->digit = quent;
+    temp->next = result;
+    result = temp;
+  }
+  return result;
+}
+
+void free_list(struct node* root) {
+  struct node *tmp = NULL;
+  while (root) {
+    tmp = root;
+    root = root->next;
+    free(tmp);
+  }
+}
+
+void print_list(struct node *root) {
+  while (root) {
+    printf("%d ", root->digit);
+    root = root->next;
+  }
+  printf("\n");
+}
+
+int main(int argc, char** argv) {
+  int num1, num2;
+  scanf("%d%d", &num1, &num2);
+  struct node *l1 = create_list(num1);
+  struct node *l2 = create_list(num2);
+  struct node *l3 = sum(l1, l2);
+  print_list(l3);
+  free(l1);
+  free(l2);
+  free(l3);
+  return 0;
+}

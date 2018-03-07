@@ -1,0 +1,8 @@
+#include<stdio.h>
+
+int main(void){
+	printf("Enter a 24 hour time: \n");
+	scanf("%d%d",&hour,&time);
+	printf("%5d%5d\n",hour,time)
+
+}

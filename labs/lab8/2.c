@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+int binarysearch(float loan,float int_rate,float months){
+	float low = 0;
+	float high = loan;
+	float p_out,payment,interest,principal,total_int=0,cent;
+	cent= months/100;
+	printf("%f\n",cent);
+	for(;;){
+		payment = (low+high)/2;
+		//printf("%.2f\n",payment);
+		p_out = loan;
+		for(int i=0;i< months;i++){
+			interest = p_out*int_rate;
+			principal = payment - interest;
+			p_out -= principal;
+		}
+		if ((p_out<=0 && p_out>=-cent)){
+			p_out = loan;
+			printf("Your monthly payment = %f\n",payment);
+			printf("        principlal_outstanding         payment        interest        principal\n");
+			int i=0;
+			for(i=0;i<months;i++){
+                        	interest = p_out*int_rate;
+                        	total_int += interest;
+                        	principal = payment - interest;
+				printf("payment No.%d:  %15.2f %15.2f %15.2f %15.2f\n",i+1,p_out,payment,interest,principal);
+                        	p_out -= principal;
+
+			}
+			interest = p_out*int_rate;
+                        total_int += interest;
+                        principal = payment - interest;
+			//printf("payment No.%d: %15.2f %15.2f %15.2f %15.2f\n",i,principal_out,principal_out+interest,interest,principal);
+			printf("\n     Total interest paid = %.2f\n     Total principal unpaid = 0.00\n",total_int);
+
+			return 1;
+		}
+		else if(p_out>0){
+			low = payment;
+		}
+		else if(p_out<-cent){
+			high = payment;
+		}
+
+	}
+	return 0;
+}
+
+int main(void){
+        float months;
+	float loan,int_rate;
+
+	printf("Enter the loan amount: ");
+	scanf("%f",&loan);
+	printf("Enter the annual interest rate: ");
+	scanf("%f",&int_rate);
+	int_rate = int_rate/1200;
+	printf("Enter the number of months to pay back: ");
+	scanf("%f",&months);
+	//printf("%f %f %f",loan,int_rate,months);
+
+	return binarysearch(loan,int_rate,months);
+
+}

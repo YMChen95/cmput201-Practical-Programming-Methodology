@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <math.h>
+
+int intlen(int invalue);
+
+int main ()
+{	
+	int d=100;
+	
+	printf("%d\n",intlen(d));
+}
+
+
+int intlen(int invalue){
+  int length;
+  while (invalue>=1){
+    invalue=invalue/10;
+    length++;
+  }
+  return length;
+}
+

@@ -1,0 +1,23 @@
+#include<stdio.h>
+int main(int argc, char*argv[])
+{
+        int     i;
+        FILE    * fp;
+        for( i = 1; i < argc; i++ )
+        {
+                fp = fopen( argv[ i ], "r" );
+                if( fp == NULL )
+                {
+			printf("Could not open file %s\n", argv[i]);
+			exit(-1);
+		}
+		else
+		{
+			parseFile(fp, argv[i]);
+			fclose(fp);
+		}
+	}
+	return(0);
+}/*main*/
+
+

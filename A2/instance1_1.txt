@@ -1,0 +1,10 @@
+#instance1_1.txt
+#area [0, max_x] x [0, max_y]
+100 100
+#number of points num_pt
+1
+#coordinates
+61 96
+#end of instance
+#Edges of the MST by Prim's algorithm: 0
+# The total length of the MST is 0.
